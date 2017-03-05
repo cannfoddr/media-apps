@@ -1,0 +1,22 @@
+  plex2:
+    container_name: plex2
+    image: plexinc/pms-docker:plexpass
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+      - PLEX_CLAIM=claim-DSuMEj6QiyDxs1ssXV7F
+      - ADVERTISE_IP=http://192.168.1.190:32400/
+    hostname: PlexDocker
+    volumes:
+      - ./volumes/plex:/config
+      - ./volumes/transcode:/transcode
+    volumes_from:
+      - datastore
+    networks:
+      - physical
+
+networks:
+  proxy-tier:
+    external:
+      name: nginx-proxy
+  physical:

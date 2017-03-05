@@ -1,0 +1,127 @@
+version: "2.1"
+
+services:
+
+  couchpotato:
+    image: linuxserver/couchpotato:latest
+    ports:
+      - 5050
+    volumes:
+      - ./volumes/couchpotato:/config
+      - /mnt/downloads:/downloads
+      - /mnt/Movies:/movies
+    # env_file: uidgid.env
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=5050
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=couchpotato.merwood.com
+      - LETSENCRYPT_HOST=couchpotato.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    restart: unless-stopped
+    networks:
+      - proxy-tier
+
+  sickrage:
+    image: linuxserver/sickrage:latest
+    ports:
+      - 8081
+    restart: unless-stopped
+    volumes:
+      - ./volumes/sickrage:/config
+      - /mnt/downloads:/downloads
+      - /mnt/TV:/tv
+    # env_file: uidgid.env
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=8081
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=sickrage.merwood.com
+      - LETSENCRYPT_HOST=sickrage.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    networks:
+      - proxy-tier
+
+  sabnzbd:
+    image: linuxserver/sabnzbd:latest
+    ports:
+      - 8080
+    volumes:
+      - ./volumes/sabnzbd/:/config
+      - /mnt/downloads/:/downloads
+    # env_file: uidgid.env
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=8080
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=sabnzbd.merwood.com
+      - LETSENCRYPT_HOST=sabnzbd.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    restart: unless-stopped
+    networks:
+      - proxy-tier
+
+  nzbhydra:
+    image: linuxserver/hydra
+    ports:
+      - 5075
+    volumes:
+      - ./volumes/nzbhydra:/config
+      - /usr/share/zoneinfo/Europe/London:/etc/localtime:ro
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=5075
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=nzbhydra.merwood.com
+      - LETSENCRYPT_HOST=nzbhydra.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    restart: unless-stopped
+    networks:
+      - proxy-tier
+
+  plexpy:
+    image: linuxserver/plexpy:latest
+    ports:
+      - 8181
+    restart: unless-stopped
+    volumes:
+      - ./volumes/plexpy:/config
+      - ./volumes/plex/Library/Application\ Support/Plex\ Media\ Server/Logs/:/logs
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=8181
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=plexpy.merwood.com
+      - LETSENCRYPT_HOST=plexpy.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    networks:
+      - proxy-tier
+
+  plexrequests:
+    image: linuxserver/plexrequests
+    ports:
+      - 3000
+    restart: unless-stopped
+    volumes:
+      - ./volumes/plexrequests:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/London
+      - VIRTUAL_PORT=3000
+      - VIRTUAL_NETWORK=nginx-proxy
+      - VIRTUAL_HOST=plexrequests.merwood.com
+      - LETSENCRYPT_HOST=plexrequests.merwood.com
+      - LETSENCRYPT_EMAIL=adrian@merwood.com
+      - LETSENCRYPT_TEST=true
+    networks:
+      - proxy-tier
+
+networks:
+  proxy-tier:
+    external:
+      name: nginx-proxy
