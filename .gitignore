@@ -1,8 +1,8 @@
-./volumes/couchpotato/**
-./volumes/sickrage/**
-./volumes/sabnzbd/**
-./volumes/nzbhydra/**
-./volumes/plex/**
-./volumes/plexpy/**
-./volumes/transcode/**
 *.swp
+volumes/couchpotato
+volumes/nzbhydra/hydra
+volumes/plex
+volumes/plexpy
+volumes/plexrequests
+volumes/sabnzbd
+volumes/sickrage
